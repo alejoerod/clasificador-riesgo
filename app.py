@@ -70,18 +70,51 @@ if archivo is not None:
         df_result["probabilidad"] = probs
         df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
 
-        st.subheader("📊 Resultados")
-        st.dataframe(df_result.head())
+        # ----------------------------------
+        # Agregar etiqueta de riesgo
+        # ----------------------------------
+        def etiqueta_riesgo(p):
+            if p >= 0.75:
+                return "🔴 Alto"
+            elif p >= 0.45:
+                return "🟠 Moderado"
+            else:
+                return "🟢 Bajo"
 
-        # Descargar Excel
+        df_result["riesgo_texto"] = df_result["probabilidad"].apply(etiqueta_riesgo)
+
+        # ----------------------------------
+        # Ordenar por probabilidad descendente
+        # ----------------------------------
+        df_result = df_result.sort_values("probabilidad", ascending=False)
+
+        # ----------------------------------
+        # Mostrar tabla (IDENTIFICACION)
+        # ----------------------------------
+        st.subheader("📊 Estudiantes Identificados con Riesgo")
+        st.dataframe(
+            df_result[[
+                "nombre",
+                "apellido",
+                "dni",
+                "probabilidad",
+                "riesgo_predicho",
+                "riesgo_texto"
+            ]]
+        )
+
+        # ----------------------------------
+        # Generar archivo Excel descargable
+        # ----------------------------------
         excel_bytes = exportar_excel(df_result)
 
         st.download_button(
-            label="⬇ Descargar resultados en Excel",
+            label="⬇ Descargar informe completo en Excel",
             data=excel_bytes,
             file_name="resultado_clasificado.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 
     except Exception as e:
         st.error("Ocurrió un error procesando el archivo.")
