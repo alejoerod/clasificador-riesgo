@@ -17,11 +17,11 @@ modelo, columnas_modelo = cargar_modelo()
 
 
 # ===============================================================
-# FUNCIÓN PARA EXPORTAR A EXCEL
+# FUNCIÓN PARA EXPORTAR A EXCEL (USANDO openpyxl)
 # ===============================================================
 def exportar_excel(df):
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Resultados')
     return output.getvalue()
 
@@ -30,7 +30,7 @@ def exportar_excel(df):
 # INTERFAZ DE STREAMLIT
 # ===============================================================
 st.title("🔍 Clasificador de Riesgo – Intento de Suicidio")
-st.write("Subí un archivo CSV con las nuevas respuestas para clasificarlas automáticamente.")
+st.write("Subí un archivo CSV con nuevas respuestas para generar la clasificación automáticamente.")
 
 archivo = st.file_uploader("📂 Seleccionar archivo CSV", type=["csv"])
 
@@ -52,7 +52,7 @@ if archivo is not None:
             st.write(faltantes)
             st.stop()
 
-        # Dataset usado para el modelo
+        # Dataset que usa el modelo
         df_used = df_new[columnas_modelo].copy()
 
         # Asegurar tipo numérico
