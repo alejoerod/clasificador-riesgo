@@ -68,7 +68,7 @@ if archivo is not None:
         "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores realmente sabían lo que estabas haciendo en tu tiempo libre? ": "q57",
         "Durante los últimos 12 meses, ¿alguna vez te intimidaron en la escuela? ": "q66",
         "Durante los últimos 12 meses, ¿alguna vez te intimidaron cuando no estabas en la escuela? ": "q67",
-        "Durante los últimos 12 meses, ¿alguna vez te intimidaron por internet? ": "q68",
+        "Durante los últimos 12 meses, ¿alguna vez te intimidaron por internet?  ": "q68",
         "¿Con quién tomas alcohol habitualmente? ": "q74",
         "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores te hicieron sentir ridículo o te menospreciaron/subestimaron (por ejemplo, diciendo que sos un tonto o inútil)? ": "q80"
     }
