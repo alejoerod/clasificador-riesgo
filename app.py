@@ -37,7 +37,7 @@ archivo = st.file_uploader("📂 Seleccionar archivo CSV", type=["csv"])
 
 if archivo is not None:
     try:
-        df_new = pd.read_csv(archivo, encoding="latin1")
+        df_new = pd.read_csv(archivo,  encoding="utf-8")
         st.success("Archivo CSV cargado correctamente.")
 
         st.subheader("Vista previa")
