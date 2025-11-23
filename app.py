@@ -58,7 +58,7 @@ if archivo is not None:
         "Durante los últimos 12 meses ¿con qué frecuencia estuviste tan preocupado por algo que no podías dormir por la noche? ": "q23",
         "¿Cuántos amigos o amigas muy cercanos tenés? ": "q27",
         "¿Qué edad tenías cuando probaste un cigarrillo por primera vez? ": "q28",
-        "Durante los últimos 30 días ¿cuántos días usaste otra forma de tabaco, como pipa, cigarrillos armados, narguile?": "q30",
+        "Durante los últimos 30 días ¿cuántos días usaste otra forma de tabaco, como pipa, cigarrillos armados, narguile? ": "q30",
         "¿Qué edad tenías cuando tomaste tu primer trago de  de alcohol, algo más que unos pocos sorbos? ": "q34",
         "Durante tu vida ¿cuántas veces tuviste problemas con tu familia o amigos, faltaste a la escuela o te metiste  en peleas como resultado de tomar alcohol? ": "q39",
         "¿Qué edad tenías cuando usaste drogas por primera vez? ": "q40",
@@ -114,6 +114,21 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_respuestas_edad)
 
+    # ===============================================================
+    # MAPEO DE RESPUESTAS — q30 (uso de tabaco en últimos 30 días)
+    # ===============================================================
+    map_q30 = {
+        "0 días": 1,
+        "1 o 2 días": 2,
+        "3 a 5 días": 3,
+        "6 a 9 días": 4,
+        "10 a 19 días": 5,
+        "20 a 29 días": 6,
+        "Los 30 días": 7
+    }
+
+    if "q30" in df_new.columns:
+        df_new["q30"] = df_new["q30"].replace(map_q30)
 
     # ===============================================================
     # MAPEO DE RESPUESTAS – CANTIDAD
