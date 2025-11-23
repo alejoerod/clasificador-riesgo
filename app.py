@@ -60,7 +60,7 @@ if archivo is not None:
         "¿Cuántos amigos o amigas muy cercanos": "q27",
         "cuando probaste un cigarrillo": "q28",
         "cuántos días usaste otra forma de tabaco": "q30",
-        "primer trago de  de alcohol": "q34",
+        "primer trago de alcohol": "q34",
         "cuántas veces tuviste problemas con tu familia": "q39",
         "cuando usaste drogas por primera vez": "q40",
         "cuando tuviste relaciones sexuales por primera vez": "q45",
