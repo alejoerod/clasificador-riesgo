@@ -66,7 +66,7 @@ if archivo is not None:
         "¿Cuántos amigos o amigas muy cercanos tenés?": "q27",
         "¿Qué edad tenías cuando probaste un cigarrillo por primera vez?": "q28",
         "Durante los últimos 30 días ¿cuántos días usaste otra forma de tabaco, como pipa, cigarrillos armados, narguile?": "q30",
-        "¿Qué edad tenías cuando tomaste tu primer trago de  de alcohol, algo más que unos pocos sorbos?": "q34",
+        "¿Qué edad tenías cuando tomaste tu primer trago de  de alcohol, algo más que unos pocos sorbos? ": "q34",
         "Durante tu vida ¿cuántas veces tuviste problemas con tu familia o amigos, faltaste a la escuela o te metiste  en peleas como resultado de tomar alcohol?": "q39",
         "¿Qué edad tenías cuando usaste drogas por primera vez?": "q40",
         "¿Qué edad tenías cuando tuviste relaciones sexuales por primera vez?": "q45",
