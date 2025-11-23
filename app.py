@@ -254,7 +254,7 @@ if archivo is not None:
     st.subheader("📊 Estudiantes Identificados")
     st.dataframe(
         df_result[[
-            "nombre", "apellido", "dni",
+            "Nombre", "Apellido", "DNI",
             "probabilidad", "riesgo_predicho", "riesgo_texto"
         ]]
     )
