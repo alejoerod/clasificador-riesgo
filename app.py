@@ -82,7 +82,7 @@ if archivo is not None:
     map_respuestas_frecuencia = {
         "Nunca": 1,
         "Rara vez": 2,
-        "A veces": 3,
+        "Algunas veces": 3,
         "Frecuentemente": 4,
         "Siempre": 5
     }
