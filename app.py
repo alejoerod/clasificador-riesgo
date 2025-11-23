@@ -54,23 +54,23 @@ if archivo is not None:
     # ===============================================================
     map_columnas = {
         "Durante los últimos 12 meses, Cuantas veces fuiste atacado físicamente? ": "q15",
-        "Durante los últimos 12 meses, ¿con qué frecuencia te sentiste solo o sola?": "q22",
-        "Durante los últimos 12 meses ¿con qué frecuencia estuviste tan preocupado por algo que no podías dormir por la noche?": "q23",
-        "¿Cuántos amigos o amigas muy cercanos tenés?": "q27",
-        "¿Qué edad tenías cuando probaste un cigarrillo por primera vez?": "q28",
+        "Durante los últimos 12 meses, ¿con qué frecuencia te sentiste solo o sola? ": "q22",
+        "Durante los últimos 12 meses ¿con qué frecuencia estuviste tan preocupado por algo que no podías dormir por la noche? ": "q23",
+        "¿Cuántos amigos o amigas muy cercanos tenés? ": "q27",
+        "¿Qué edad tenías cuando probaste un cigarrillo por primera vez? ": "q28",
         "Durante los últimos 30 días ¿cuántos días usaste otra forma de tabaco, como pipa, cigarrillos armados, narguile?": "q30",
-        "¿Qué edad tenías cuando tomaste tu primer trago de  de alcohol, algo más que unos pocos sorbos?": "q34",
-        "Durante tu vida ¿cuántas veces tuviste problemas con tu familia o amigos, faltaste a la escuela o te metiste  en peleas como resultado de tomar alcohol?": "q39",
-        "¿Qué edad tenías cuando usaste drogas por primera vez?": "q40",
-        "¿Qué edad tenías cuando tuviste relaciones sexuales por primera vez?": "q45",
-        "Durante los últimos 30 días ¿con qué frecuencia la mayoría de los estudiantes fueron amables con vos y te prestaron ayuda?": "q54",
-        "Durante los últimos 30 días ¿con qué frecuencia entendieron tus padres o cuidadores tus problemas y preocupaciones?": "q56",
-        "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores realmente sabían lo que estabas haciendo en tu tiempo libre?": "q57",
-        "Durante los últimos 12 meses, ¿alguna vez te intimidaron en la escuela?": "q66",
-        "Durante los últimos 12 meses, ¿alguna vez te intimidaron cuando no estabas en la escuela?": "q67",
-        "Durante los últimos 12 meses, ¿alguna vez te intimidaron por internet?": "q68",
-        "¿Con quién tomas alcohol habitualmente?": "q74",
-        "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores te hicieron sentir ridículo o te menospreciaron/subestimaron (por ejemplo, diciendo que sos un tonto o inútil)?": "q80"
+        "¿Qué edad tenías cuando tomaste tu primer trago de  de alcohol, algo más que unos pocos sorbos? ": "q34",
+        "Durante tu vida ¿cuántas veces tuviste problemas con tu familia o amigos, faltaste a la escuela o te metiste  en peleas como resultado de tomar alcohol? ": "q39",
+        "¿Qué edad tenías cuando usaste drogas por primera vez? ": "q40",
+        "¿Qué edad tenías cuando tuviste relaciones sexuales por primera vez? ": "q45",
+        "Durante los últimos 30 días ¿con qué frecuencia la mayoría de los estudiantes fueron amables con vos y te prestaron ayuda? ": "q54",
+        "Durante los últimos 30 días ¿con qué frecuencia entendieron tus padres o cuidadores tus problemas y preocupaciones? ": "q56",
+        "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores realmente sabían lo que estabas haciendo en tu tiempo libre? ": "q57",
+        "Durante los últimos 12 meses, ¿alguna vez te intimidaron en la escuela? ": "q66",
+        "Durante los últimos 12 meses, ¿alguna vez te intimidaron cuando no estabas en la escuela? ": "q67",
+        "Durante los últimos 12 meses, ¿alguna vez te intimidaron por internet? ": "q68",
+        "¿Con quién tomas alcohol habitualmente? ": "q74",
+        "Durante los últimos 30 días ¿con qué frecuencia tus padres o cuidadores te hicieron sentir ridículo o te menospreciaron/subestimaron (por ejemplo, diciendo que sos un tonto o inútil)? ": "q80"
     }
 
     df_new.rename(columns=map_columnas, inplace=True)
