@@ -218,16 +218,16 @@ if archivo is not None:
     # ===============================================================
     # PREDICCIÓN
     # ===============================================================
-    #probs = modelo.predict_proba(df_used)[:, 1]
+    probs = modelo.predict_proba(df_used)[:, 1]
     
     # DEBUG ANTES DE PREDICT_PROBA — detectar NaN
-    nan_cols = df_used.columns[df_used.isna().any()].tolist()
-    if nan_cols:
-        st.error("ERROR: Hay columnas con valores sin mapear (NaN detectado).")
-        st.write("Columnas afectadas:", nan_cols)
-        st.write("Valores problemáticos:")
-        st.write(df_used[nan_cols].head())
-        st.stop()
+    #nan_cols = df_used.columns[df_used.isna().any()].tolist()
+    #if nan_cols:
+    #    st.error("ERROR: Hay columnas con valores sin mapear (NaN detectado).")
+    #    st.write("Columnas afectadas:", nan_cols)
+    #    st.write("Valores problemáticos:")
+    #    st.write(df_used[nan_cols].head())
+    #    st.stop()
 
     # Si todo está bien → predecir
     probs = modelo.predict_proba(df_used)[:, 1]
@@ -236,8 +236,8 @@ if archivo is not None:
     umbral = 0.45
 
     df_result = df_new.copy()
-    #df_result["probabilidad"] = probs
-    #df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
+    df_result["probabilidad"] = probs
+    df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
 
     def etiqueta_riesgo(p):
         if p >= 0.75: return "🔴 Alto"
