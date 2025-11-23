@@ -53,7 +53,7 @@ if archivo is not None:
     # MAPEO AUTOMÁTICO DE COLUMNAS (DESCRIPCIÓN → qXX)
     # ===============================================================
     map_columnas = {
-        "Durante los últimos 12 meses, Cuantas veces fuiste atacado físicamente?": "q15",
+        "Durante los últimos 12 meses, Cuantas veces fuiste atacado físicamente? ": "q15",
         "Durante los últimos 12 meses, ¿con qué frecuencia te sentiste solo o sola?": "q22",
         "Durante los últimos 12 meses ¿con qué frecuencia estuviste tan preocupado por algo que no podías dormir por la noche?": "q23",
         "¿Cuántos amigos o amigas muy cercanos tenés?": "q27",
