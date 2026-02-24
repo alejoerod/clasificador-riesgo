@@ -239,7 +239,7 @@ if archivo is not None:
     conteo_riesgo = df_result["riesgo_texto"].value_counts()
 
     # Orden solicitado: Bajo → Moderado → Alto
-    niveles = ["🟢 Bajo", "🟠 Moderado", "🔴 Alto"]
+    niveles = ["Bajo", "Moderado", "Alto"]
     valores = [conteo_riesgo.get(nivel, 0) for nivel in niveles]
 
     # Crear figura más pequeña
