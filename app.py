@@ -229,36 +229,38 @@ if archivo is not None:
     st.dataframe(df_result[columnas_mostrar])
     
     # -----------------------------------------------------------
-    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO (ESTILIZADO)
+    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO (FORMATO FINAL)
     # -----------------------------------------------------------
     st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import MaxNLocator
 
     conteo_riesgo = df_result["riesgo_texto"].value_counts()
 
-    niveles = ["🔴 Alto", "🟠 Moderado", "🟢 Bajo"]
+    # Orden solicitado: Bajo → Moderado → Alto
+    niveles = ["🟢 Bajo", "🟠 Moderado", "🔴 Alto"]
     valores = [conteo_riesgo.get(nivel, 0) for nivel in niveles]
 
     # Crear figura más pequeña
-    fig, ax = plt.subplots(figsize=(5, 3))
+    fig, ax = plt.subplots(figsize=(4, 2.5))
 
-    colores = ["#d62728", "#ff7f0e", "#2ca02c"]
+    colores = ["#2ca02c", "#ff7f0e", "#d62728"]
 
-    barras = ax.bar(niveles, valores, color=colores, width=0.6)
+    barras = ax.bar(niveles, valores, color=colores, width=0.5)
 
-    # Quitar bordes superiores y derecho
+    # Quitar bordes innecesarios
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
 
-    # Título más limpio
-    ax.set_title("Cantidad de alumnos por nivel de riesgo", fontsize=11)
+    # Escala Y solo en enteros
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
 
-    # Quitar etiqueta eje X
-    ax.set_xlabel("")
     ax.set_ylabel("Cantidad")
+    ax.set_xlabel("")
+    ax.set_title("Distribución por Nivel de Riesgo", fontsize=10)
 
-    # Agregar valores encima de las barras
+    # Agregar valores arriba de cada barra
     for barra in barras:
         altura = barra.get_height()
         ax.text(
@@ -267,12 +269,15 @@ if archivo is not None:
             f"{int(altura)}",
             ha="center",
             va="bottom",
-            fontsize=9
+            fontsize=8
         )
 
     plt.tight_layout()
 
-    st.pyplot(fig)
+    # Centrar gráfico usando columnas
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.pyplot(fig)
 
     # -----------------------------------------------------------
     # 8) DESCARGA
