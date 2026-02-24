@@ -209,10 +209,10 @@ if archivo is not None:
 
     def etiqueta_riesgo(p):
         if p >= 0.75:
-            return "🔴 Alto"
+            return "Alto"
         elif p >= 0.45:
-            return "🟠 Moderado"
-        return "🟢 Bajo"
+            return "Moderado"
+        return "Bajo"
 
     df_result["riesgo_texto"] = df_result["probabilidad"].apply(etiqueta_riesgo)
     df_result = df_result.sort_values("probabilidad", ascending=False)
