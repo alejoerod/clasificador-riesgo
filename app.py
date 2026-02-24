@@ -227,6 +227,29 @@ if archivo is not None:
     columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_texto"]
 
     st.dataframe(df_result[columnas_mostrar])
+    
+    # -----------------------------------------------------------
+    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO
+    # -----------------------------------------------------------
+    st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
+
+    # Contar alumnos por nivel
+    conteo_riesgo = df_result["riesgo_texto"].value_counts()
+
+    # Asegurar que estén los tres niveles aunque alguno sea 0
+    niveles = ["🔴 Alto", "🟠 Moderado", "🟢 Bajo"]
+    valores = [conteo_riesgo.get(nivel, 0) for nivel in niveles]
+
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots()
+    colores = ["red", "orange", "green"]
+
+    ax.bar(niveles, valores)
+    ax.set_ylabel("Cantidad de alumnos")
+    ax.set_title("Cantidad de alumnos por nivel de riesgo")
+
+    st.pyplot(fig)
 
     # -----------------------------------------------------------
     # 8) DESCARGA
