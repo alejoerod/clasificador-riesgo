@@ -229,25 +229,48 @@ if archivo is not None:
     st.dataframe(df_result[columnas_mostrar])
     
     # -----------------------------------------------------------
-    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO
+    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO (ESTILIZADO)
     # -----------------------------------------------------------
     st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
-    # Contar alumnos por nivel
+    import matplotlib.pyplot as plt
+
     conteo_riesgo = df_result["riesgo_texto"].value_counts()
 
-    # Asegurar que estén los tres niveles aunque alguno sea 0
     niveles = ["🔴 Alto", "🟠 Moderado", "🟢 Bajo"]
     valores = [conteo_riesgo.get(nivel, 0) for nivel in niveles]
 
-    import matplotlib.pyplot as plt
+    # Crear figura más pequeña
+    fig, ax = plt.subplots(figsize=(5, 3))
 
-    fig, ax = plt.subplots()
-    colores = ["red", "orange", "green"]
+    colores = ["#d62728", "#ff7f0e", "#2ca02c"]
 
-    ax.bar(niveles, valores)
-    ax.set_ylabel("Cantidad de alumnos")
-    ax.set_title("Cantidad de alumnos por nivel de riesgo")
+    barras = ax.bar(niveles, valores, color=colores, width=0.6)
+
+    # Quitar bordes superiores y derecho
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # Título más limpio
+    ax.set_title("Cantidad de alumnos por nivel de riesgo", fontsize=11)
+
+    # Quitar etiqueta eje X
+    ax.set_xlabel("")
+    ax.set_ylabel("Cantidad")
+
+    # Agregar valores encima de las barras
+    for barra in barras:
+        altura = barra.get_height()
+        ax.text(
+            barra.get_x() + barra.get_width() / 2,
+            altura,
+            f"{int(altura)}",
+            ha="center",
+            va="bottom",
+            fontsize=9
+        )
+
+    plt.tight_layout()
 
     st.pyplot(fig)
 
