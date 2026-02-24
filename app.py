@@ -208,13 +208,13 @@ if archivo is not None:
     df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
 
     def etiqueta_riesgo(p):
-        if p >= 0.75:
+        if p >= 0.8:
             return "Alto"
         elif p >= 0.45:
             return "Moderado"
         return "Bajo"
 
-    df_result["riesgo_texto"] = df_result["probabilidad"].apply(etiqueta_riesgo)
+    df_result["riesgo_descripcion"] = df_result["probabilidad"].apply(etiqueta_riesgo)
     df_result = df_result.sort_values("probabilidad", ascending=False)
 
     # -----------------------------------------------------------
@@ -224,7 +224,7 @@ if archivo is not None:
     columnas_id = [c for c in ["Nombre", "Apellido", "DNI", "nombre", "apellido", "dni"] if c in df_result.columns]
     columnas_id = list(dict.fromkeys(columnas_id))  # eliminar duplicados
 
-    columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_texto"]
+    columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_descripcion"]
 
     st.dataframe(df_result[columnas_mostrar])
     
@@ -236,7 +236,7 @@ if archivo is not None:
     import matplotlib.pyplot as plt
     from matplotlib.ticker import MaxNLocator
 
-    conteo_riesgo = df_result["riesgo_texto"].value_counts()
+    conteo_riesgo = df_result["riesgo_descripcion"].value_counts()
 
     # Orden solicitado: Bajo → Moderado → Alto
     niveles = ["Bajo", "Moderado", "Alto"]
