@@ -27,8 +27,8 @@ def exportar_excel(df):
 # ===============================================================
 # APP
 # ===============================================================
-st.title("🔍 Sistema de Alarma Temprana – Clasificación de Riesgo")
-st.write("Subí el archivo CSV exportado desde Google Sheets.")
+st.title("Sistema de Alarma Temprana – Clasificador de Riesgo")
+st.write("Subir el archivo .csv con las respuestas.")
 
 archivo = st.file_uploader("📂 Cargar CSV", type=["csv"])
 
