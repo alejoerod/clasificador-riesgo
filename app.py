@@ -4,9 +4,9 @@ import numpy as np
 import pickle
 from io import BytesIO
 
-
-# Carga del modelo y de las columnas
-
+# ===============================================================
+# CARGAR MODELO
+# ===============================================================
 @st.cache_resource
 def cargar_modelo():
     modelo = pickle.load(open("modelo_gbt.pkl", "rb"))
@@ -15,44 +15,44 @@ def cargar_modelo():
 
 modelo, columnas_modelo = cargar_modelo()
 
-
-# Funcion para crear el archivo excel
-
+# ===============================================================
+# EXPORTAR EXCEL
+# ===============================================================
 def exportar_excel(df):
     output = BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Resultados")
     return output.getvalue()
 
-
-# Aplicacion web
-
-st.title("🔍 Sistema de Alarma Temprana – Clasificación de Riesgo")
-st.write("Subí el archivo CSV exportado desde Google Sheets.")
+# ===============================================================
+# APP
+# ===============================================================
+st.title("Sistema de Alarma Temprana – Clasificador de Riesgo")
+st.write("Subir el archivo .csv con las respuestas.")
 
 archivo = st.file_uploader("📂 Cargar CSV", type=["csv"])
 
 if archivo is not None:
 
-    
-    # 1) se lee el archivo csv
-    
+    # -----------------------------------------------------------
+    # 1) LECTURA DEL CSV (UTF-8 + tolerancia)
+    # -----------------------------------------------------------
     try:
         df_new = pd.read_csv(archivo, encoding="utf-8", engine="python")
     except:
         df_new = pd.read_csv(archivo, encoding_errors="ignore")
 
-    # normalizacion de las columnas
+    # NORMALIZAR COLUMNAS — FUNDAMENTAL PARA TU CSV
     df_new.columns = df_new.columns.str.strip()               # quitar espacios
-    df_new.columns = df_new.columns.str.replace(r"\s+", " ", regex=True)  
+    df_new.columns = df_new.columns.str.replace(r"\s+", " ", regex=True)  # doble espacio → uno
     df_new.columns = df_new.columns.str.rstrip()
 
     st.success("CSV cargado correctamente.")
     st.dataframe(df_new.head())
 
-
-    # 2) mapeo de las columnas del archivo
-
+    # -----------------------------------------------------------
+    # 2) MAPEO DE COLUMNAS (ROBUSTO, POR COINCIDENCIA PARCIAL)
+    # -----------------------------------------------------------
     map_columnas = {
         "Cuantas veces fuiste atacado físicamente": "q15",
         "¿con qué frecuencia te sentiste solo": "q22",
@@ -82,11 +82,11 @@ if archivo is not None:
             if key.lower() in normalizado:
                 df_new = df_new.rename(columns={col: destino})
 
+    # -----------------------------------------------------------
+    # 3) MAPEO DE RESPUESTAS
+    # -----------------------------------------------------------
 
-    # 3) mapeo de las respuestas
-
-
-    # frecuencias
+    # FRECUENCIA
     map_frec = {
         "Nunca": 1,
         "Rara vez": 2,
@@ -102,7 +102,7 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_frec)
 
-    # edades
+    # EDAD
     map_edad = {
         "Nunca": 1,
         "7 años o menos": 2,
@@ -118,7 +118,7 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_edad)
 
-    # cantidades o dias
+    # CANTIDADES / DÍAS
     map_q15 = {
         "Ninguna": 1,
         "1 vez": 2,
@@ -158,13 +158,13 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(mapa)
 
-    # preguntas si/no
+    # BULLYING — Sí/No
     map_bull = {"Si": 1, "Sí": 1, "No": 2}
     for col in ["q66", "q67", "q68"]:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_bull)
 
-    # consumo de alcohol
+    # ALCOHOL
     map_q74 = {
         "No tomo alcohol": 1,
         "Con mis amigos": 2,
@@ -175,20 +175,18 @@ if archivo is not None:
     if "q74" in df_new.columns:
         df_new["q74"] = df_new["q74"].replace(map_q74)
 
-
-    # 4) se valida que existan todas las columnas necesarias
-    # sino se muestran cuales son las faltantes
-    
+    # -----------------------------------------------------------
+    # 4) VALIDAR QUE TODAS LAS COLUMNAS EXISTAN
+    # -----------------------------------------------------------
     faltantes = [c for c in columnas_modelo if c not in df_new.columns]
     if faltantes:
         st.error("Faltan columnas necesarias para el modelo:")
         st.write(faltantes)
         st.stop()
 
-
-    # 5) preparacion del dataset
-
-
+    # -----------------------------------------------------------
+    # 5) PREPARAR DATASET PARA EL MODELO
+    # -----------------------------------------------------------
     df_used = df_new[columnas_modelo].copy()
 
     for col in columnas_modelo:
@@ -199,9 +197,9 @@ if archivo is not None:
         else:
             df_used[col] = 1   # fallback seguro
 
-
-    # 6) prediccion
-
+    # -----------------------------------------------------------
+    # 6) PREDICCIÓN
+    # -----------------------------------------------------------
     probs = modelo.predict_proba(df_used)[:, 1]
     umbral = 0.45
 
@@ -219,17 +217,20 @@ if archivo is not None:
     df_result["riesgo_descripcion"] = df_result["probabilidad"].apply(etiqueta_riesgo)
     df_result = df_result.sort_values("probabilidad", ascending=False)
 
-    # 7) resultados
-
+    # -----------------------------------------------------------
+    # 7) MOSTRAR RESULTADOS
+    # -----------------------------------------------------------
     st.subheader("📊 Estudiantes Identificados")
-
     columnas_id = [c for c in ["Nombre", "Apellido", "DNI", "nombre", "apellido", "dni"] if c in df_result.columns]
     columnas_id = list(dict.fromkeys(columnas_id))  # eliminar duplicados
 
     columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_descripcion"]
 
     st.dataframe(df_result[columnas_mostrar])
-    # 8) grafico de barras
+    
+    # -----------------------------------------------------------
+    # 8) GRÁFICO DE BARRAS - DISTRIBUCIÓN DE RIESGO (FORMATO FINAL)
+    # -----------------------------------------------------------
     st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
     import matplotlib.pyplot as plt
@@ -278,8 +279,9 @@ if archivo is not None:
     with col2:
         st.pyplot(fig)
 
-    # 9) descarga del excel
-
+    # -----------------------------------------------------------
+    # 8) DESCARGA
+    # -----------------------------------------------------------
     excel_bytes = exportar_excel(df_result)
 
     st.download_button(
