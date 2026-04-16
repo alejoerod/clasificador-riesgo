@@ -210,26 +210,25 @@ if archivo is not None:
     df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
 
     def etiqueta_riesgo(p):
-        if p >= 0.75:
-            return "🔴 Alto"
+        if p >= 0.8:
+            return "Alto"
         elif p >= 0.45:
-            return "🟠 Moderado"
-        return "🟢 Bajo"
+            return "Moderado"
+        return "Bajo"
 
-    df_result["riesgo_texto"] = df_result["probabilidad"].apply(etiqueta_riesgo)
+    df_result["riesgo_descripcion"] = df_result["probabilidad"].apply(etiqueta_riesgo)
     df_result = df_result.sort_values("probabilidad", ascending=False)
-
 
     # 7) resultados
 
     st.subheader("📊 Estudiantes Identificados")
+
     columnas_id = [c for c in ["Nombre", "Apellido", "DNI", "nombre", "apellido", "dni"] if c in df_result.columns]
     columnas_id = list(dict.fromkeys(columnas_id))  # eliminar duplicados
 
-    columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_texto"]
+    columnas_mostrar = columnas_id + ["probabilidad", "riesgo_predicho", "riesgo_descripcion"]
 
     st.dataframe(df_result[columnas_mostrar])
-
     # 8) grafico de barras
     st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
