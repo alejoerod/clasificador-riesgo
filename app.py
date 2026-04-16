@@ -230,8 +230,56 @@ if archivo is not None:
 
     st.dataframe(df_result[columnas_mostrar])
 
+    # 8) grafico de barras
+    st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
-    # 8) descarga del excel
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import MaxNLocator
+
+    conteo_riesgo = df_result["riesgo_descripcion"].value_counts()
+
+    # Orden solicitado: Bajo → Moderado → Alto
+    niveles = ["Bajo", "Moderado", "Alto"]
+    valores = [conteo_riesgo.get(nivel, 0) for nivel in niveles]
+
+    # Crear figura más pequeña
+    fig, ax = plt.subplots(figsize=(4, 2.5))
+
+    colores = ["#2ca02c", "#ff7f0e", "#d62728"]
+
+    barras = ax.bar(niveles, valores, color=colores, width=0.5)
+
+    # Quitar bordes innecesarios
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # Escala Y solo en enteros
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    ax.set_ylabel("Cantidad")
+    ax.set_xlabel("")
+    ax.set_title("Distribución por Nivel de Riesgo", fontsize=10)
+
+    # Agregar valores arriba de cada barra
+    for barra in barras:
+        altura = barra.get_height()
+        ax.text(
+            barra.get_x() + barra.get_width() / 2,
+            altura,
+            f"{int(altura)}",
+            ha="center",
+            va="bottom",
+            fontsize=8
+        )
+
+    plt.tight_layout()
+
+    # Centrar gráfico usando columnas
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.pyplot(fig)
+
+    # 9) descarga del excel
 
     excel_bytes = exportar_excel(df_result)
 
