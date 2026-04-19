@@ -139,6 +139,7 @@ if archivo is not None:
         "7 anos o menos": 2,
         "8 o 9 anos": 3,
         "10 u 11 anos": 4,
+        "10 o 11 anos": 4,
         "12 o 13 anos": 5,
         "14 o 15 anos": 6,
         "16 o 17 anos": 7,
