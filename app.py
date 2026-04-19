@@ -194,11 +194,14 @@ if archivo is not None:
     for col in columnas_modelo:
         df_used[col] = pd.to_numeric(df_used[col], errors="coerce")
 
-        if df_used[col].notna().sum() > 0:
-            df_used[col] = df_used[col].fillna(df_used[col].median())
-        else:
-            df_used[col] = 1   
+    nulos_por_columna = df_used.isna().sum()
+    nulos_por_columna = nulos_por_columna[nulos_por_columna > 0]
 
+    if not nulos_por_columna.empty:
+        raise ValueError(
+            "Se encontraron valores nulos o no numéricos en las columnas del modelo:\n"
+            + nulos_por_columna.to_string()
+        )
 
     # 6) prediccion
 
