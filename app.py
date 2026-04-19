@@ -194,10 +194,10 @@ if archivo is not None:
     for col in columnas_modelo:
         df_used[col] = pd.to_numeric(df_used[col], errors="coerce")
 
-    #    if df_used[col].notna().sum() > 0:
-    #        df_used[col] = df_used[col].fillna(df_used[col].median())
-    #    else:
-    #        df_used[col] = 1   
+        if df_used[col].notna().sum() > 0:
+            df_used[col] = df_used[col].fillna(df_used[col].median())
+        else:
+            df_used[col] = 1   
 
 
     # 6) prediccion
