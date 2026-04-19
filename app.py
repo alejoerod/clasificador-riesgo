@@ -12,9 +12,11 @@ from io import BytesIO
 
 def normalizar_texto(valor):
     if pd.isna(valor):
-        return valor
+        return np.nan
     valor = str(valor).strip()
-    valor = " ".join(valor.split())  # elimina espacios duplicados
+    if valor == "":
+        return np.nan
+    valor = " ".join(valor.split())
     valor = valor.lower()
     valor = unicodedata.normalize("NFKD", valor).encode("ascii", "ignore").decode("utf-8")
     return valor
@@ -57,24 +59,20 @@ if archivo is not None:
     # =========================
     try:
         df_new = pd.read_csv(archivo, encoding="utf-8", engine="python")
-    except:
+    except Exception:
+        archivo.seek(0)
         df_new = pd.read_csv(archivo, encoding_errors="ignore")
 
     # Normalización de nombres de columnas
-    df_new.columns = df_new.columns.str.strip()
+    df_new.columns = df_new.columns.astype(str).str.strip()
     df_new.columns = df_new.columns.str.replace(r"\s+", " ", regex=True)
     df_new.columns = df_new.columns.str.rstrip()
 
     st.success("CSV cargado correctamente.")
     st.dataframe(df_new.head())
 
-    # Guardamos una copia original para poder mostrar valores reales si hay errores
+    # Copia original para mostrar valores reales si hay errores
     df_original = df_new.copy()
-
-    # Normalizar valores de texto en todo el dataframe
-    for col in df_new.columns:
-        if df_new[col].dtype == "object":
-            df_new[col] = df_new[col].apply(normalizar_texto)
 
     # =========================
     # 2) MAPEO DE COLUMNAS
@@ -100,10 +98,8 @@ if archivo is not None:
         "frecuencia tus padres o cuidadores te hicieron sentir ridiculo": "q80"
     }
 
-    columnas_originales = df_new.columns.tolist()
-
     renombres = {}
-    for col in columnas_originales:
+    for col in df_new.columns:
         col_normalizada = normalizar_texto(col)
         for key, destino in map_columnas.items():
             if key in col_normalizada:
@@ -114,10 +110,15 @@ if archivo is not None:
     df_original = df_original.rename(columns=renombres)
 
     # =========================
-    # 3) MAPEO DE RESPUESTAS
+    # 3) NORMALIZAR VALORES
+    # =========================
+    for col in df_new.columns:
+        df_new[col] = df_new[col].apply(normalizar_texto)
+
+    # =========================
+    # 4) MAPEO DE RESPUESTAS
     # =========================
 
-    # Frecuencias
     map_frec = {
         "nunca": 1,
         "rara vez": 2,
@@ -133,7 +134,6 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_frec)
 
-    # Edades
     map_edad = {
         "nunca": 1,
         "7 anos o menos": 2,
@@ -149,7 +149,6 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_edad)
 
-    # Cantidades / días
     map_q15 = {
         "ninguna": 1,
         "1 vez": 2,
@@ -185,11 +184,18 @@ if archivo is not None:
         "los 30 dias": 7
     }
 
-    for col, mapa in [("q15", map_q15), ("q27", map_q27), ("q39", map_q39), ("q30", map_q30)]:
-        if col in df_new.columns:
-            df_new[col] = df_new[col].replace(mapa)
+    if "q15" in df_new.columns:
+        df_new["q15"] = df_new["q15"].replace(map_q15)
 
-    # Sí / No
+    if "q27" in df_new.columns:
+        df_new["q27"] = df_new["q27"].replace(map_q27)
+
+    if "q39" in df_new.columns:
+        df_new["q39"] = df_new["q39"].replace(map_q39)
+
+    if "q30" in df_new.columns:
+        df_new["q30"] = df_new["q30"].replace(map_q30)
+
     map_bull = {
         "si": 1,
         "no": 2
@@ -199,7 +205,6 @@ if archivo is not None:
         if col in df_new.columns:
             df_new[col] = df_new[col].replace(map_bull)
 
-    # Consumo de alcohol
     map_q74 = {
         "no tomo alcohol": 1,
         "con mis amigos": 2,
@@ -214,7 +219,7 @@ if archivo is not None:
         df_new["q74"] = df_new["q74"].replace(map_q74)
 
     # =========================
-    # 4) VALIDAR COLUMNAS NECESARIAS
+    # 5) VALIDAR COLUMNAS NECESARIAS
     # =========================
     faltantes = [c for c in columnas_modelo if c not in df_new.columns]
 
@@ -226,50 +231,39 @@ if archivo is not None:
         st.stop()
 
     # =========================
-    # 5) PREPARACION DEL DATASET
+    # 6) PREPARACION DEL DATASET
     # =========================
     df_used = df_new[columnas_modelo].copy()
 
-    # Detectar problemas de conversión antes de predecir
     errores_mapeo = []
+    nulos_reales = []
 
     for col in columnas_modelo:
         serie_original_mapeada = df_used[col].copy()
         serie_numerica = pd.to_numeric(serie_original_mapeada, errors="coerce")
 
-        mask_error = serie_numerica.isna() & serie_original_mapeada.notna()
+        for idx in df_used.index:
+            valor_mapeado = serie_original_mapeada.loc[idx]
+            valor_numerico = serie_numerica.loc[idx]
 
-        if mask_error.any():
-            for idx in df_used.index[mask_error]:
+            if pd.isna(valor_mapeado):
                 valor_original_archivo = df_original.loc[idx, col] if col in df_original.columns else None
-                valor_luego_mapeo = df_new.loc[idx, col]
-
-                errores_mapeo.append({
-                    "fila": int(idx),
+                nulos_reales.append({
+                    "fila": int(idx) + 2,
                     "columna": col,
                     "valor_original_csv": valor_original_archivo,
-                    "valor_luego_del_mapeo": valor_luego_mapeo
+                    "valor_luego_del_mapeo": valor_mapeado
+                })
+            elif pd.isna(valor_numerico):
+                valor_original_archivo = df_original.loc[idx, col] if col in df_original.columns else None
+                errores_mapeo.append({
+                    "fila": int(idx) + 2,
+                    "columna": col,
+                    "valor_original_csv": valor_original_archivo,
+                    "valor_luego_del_mapeo": valor_mapeado
                 })
 
         df_used[col] = serie_numerica
-
-    # Detectar nulos reales (vacíos en el archivo)
-    nulos_reales = []
-
-    for col in columnas_modelo:
-        mask_nulo = df_used[col].isna()
-
-        if mask_nulo.any():
-            for idx in df_used.index[mask_nulo]:
-                valor_original_archivo = df_original.loc[idx, col] if col in df_original.columns else None
-                valor_luego_mapeo = df_new.loc[idx, col]
-
-                nulos_reales.append({
-                    "fila": int(idx),
-                    "columna": col,
-                    "valor_original_csv": valor_original_archivo,
-                    "valor_luego_del_mapeo": valor_luego_mapeo
-                })
 
     if errores_mapeo:
         st.error("Se encontraron valores que no pudieron convertirse a número luego del mapeo.")
@@ -278,19 +272,19 @@ if archivo is not None:
         st.stop()
 
     if nulos_reales:
-        st.error("Se encontraron valores nulos en columnas requeridas por el modelo.")
-        st.write("Revisá si en el CSV hay respuestas vacías en esas preguntas.")
+        st.error("Se encontraron valores vacíos o nulos en columnas requeridas por el modelo.")
+        st.write("Revisá si en el CSV hay respuestas faltantes en esas preguntas.")
         st.dataframe(pd.DataFrame(nulos_reales))
         st.stop()
 
     # =========================
-    # 6) PREDICCION
+    # 7) PREDICCION
     # =========================
     probs = modelo.predict_proba(df_used)[:, 1]
     umbral = 0.45
 
     df_result = df_original.copy()
-    df_result["probabilidad"] = probs
+    df_result["probabilidad_valor"] = probs
     df_result["riesgo_predicho"] = (probs >= umbral).astype(int)
 
     def etiqueta_riesgo(p):
@@ -300,14 +294,12 @@ if archivo is not None:
             return "Moderado"
         return "Bajo"
 
-    df_result["riesgo_descripcion"] = df_result["probabilidad"].apply(etiqueta_riesgo)
-    df_result = df_result.sort_values("probabilidad", ascending=False)
-
-    # Mostrar porcentaje
-    df_result["probabilidad"] = (df_result["probabilidad"] * 100).round(2).astype(str) + "%"
+    df_result["riesgo_descripcion"] = df_result["probabilidad_valor"].apply(etiqueta_riesgo)
+    df_result = df_result.sort_values("probabilidad_valor", ascending=False)
+    df_result["probabilidad"] = (df_result["probabilidad_valor"] * 100).round(2).astype(str) + "%"
 
     # =========================
-    # 7) RESULTADOS
+    # 8) RESULTADOS
     # =========================
     st.subheader("📊 Estudiantes Identificados")
 
@@ -319,7 +311,7 @@ if archivo is not None:
     st.dataframe(df_result[columnas_mostrar])
 
     # =========================
-    # 8) GRAFICO DE BARRAS
+    # 9) GRAFICO DE BARRAS
     # =========================
     st.subheader("📊 Distribución de Alumnos por Nivel de Riesgo")
 
@@ -362,7 +354,7 @@ if archivo is not None:
         st.pyplot(fig)
 
     # =========================
-    # 9) DESCARGA DE EXCEL
+    # 10) DESCARGA DE EXCEL
     # =========================
     excel_bytes = exportar_excel(df_result)
 
